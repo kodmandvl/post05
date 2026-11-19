@@ -1,11 +1,12 @@
 package post05
 
 import (
-	"database/sql"
+	"context"
 	"errors"
 	"fmt"
 	"strings"
 
+	"github.com/jackc/pgx/v5"
 	_ "github.com/lib/pq"
 )
 
@@ -16,6 +17,7 @@ var (
 	Username = ""
 	Password = ""
 	Database = ""
+	Ctx      = context.Background()
 )
 
 // Userdata is for holding full user data
@@ -28,13 +30,13 @@ type Userdata struct {
 	Description string
 }
 
-func openConnection() (*sql.DB, error) {
+func openConnection() (*pgx.Conn, error) {
 	// connection string
 	conn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		Hostname, Port, Username, Password, Database)
 
 	// open database
-	db, err := sql.Open("postgres", conn)
+	db, err := pgx.Connect(Ctx, conn)
 	if err != nil {
 		return nil, err
 	}
@@ -51,11 +53,11 @@ func exists(username string) int {
 		fmt.Println(err)
 		return -1
 	}
-	defer db.Close()
+	defer db.Close(Ctx)
 
 	userID := -1
 	statement := fmt.Sprintf(`SELECT "id" FROM "users" where username = '%s'`, username)
-	rows, err := db.Query(statement)
+	rows, err := db.Query(Ctx, statement)
 
 	for rows.Next() {
 		var id int
@@ -81,7 +83,7 @@ func AddUser(d Userdata) int {
 		fmt.Println(err)
 		return -1
 	}
-	defer db.Close()
+	defer db.Close(Ctx)
 
 	userID := exists(d.Username)
 	if userID != -1 {
@@ -90,7 +92,7 @@ func AddUser(d Userdata) int {
 	}
 
 	insertStatement := `insert into "users" ("username") values ($1)`
-	_, err = db.Exec(insertStatement, d.Username)
+	_, err = db.Exec(Ctx, insertStatement, d.Username)
 	if err != nil {
 		fmt.Println(err)
 		return -1
@@ -103,7 +105,7 @@ func AddUser(d Userdata) int {
 
 	insertStatement = `insert into "userdata" ("userid", "name", "surname", "description")
 	values ($1, $2, $3, $4)`
-	_, err = db.Exec(insertStatement, userID, d.Name, d.Surname, d.Description)
+	_, err = db.Exec(Ctx, insertStatement, userID, d.Name, d.Surname, d.Description)
 	if err != nil {
 		fmt.Println("db.Exec()", err)
 		return -1
@@ -118,11 +120,11 @@ func DeleteUser(id int) error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
+	defer db.Close(Ctx)
 
 	// Does the ID exist?
 	statement := fmt.Sprintf(`SELECT "username" FROM "users" where id = %d`, id)
-	rows, err := db.Query(statement)
+	rows, err := db.Query(Ctx, statement)
 
 	var username string
 	for rows.Next() {
@@ -139,14 +141,14 @@ func DeleteUser(id int) error {
 
 	// Delete from Userdata
 	deleteStatement := `delete from "userdata" where userid=$1`
-	_, err = db.Exec(deleteStatement, id)
+	_, err = db.Exec(Ctx, deleteStatement, id)
 	if err != nil {
 		return err
 	}
 
 	// Delete from Users
 	deleteStatement = `delete from "users" where id=$1`
-	_, err = db.Exec(deleteStatement, id)
+	_, err = db.Exec(Ctx, deleteStatement, id)
 	if err != nil {
 		return err
 	}
@@ -161,9 +163,10 @@ func ListUsers() ([]Userdata, error) {
 	if err != nil {
 		return Data, err
 	}
-	defer db.Close()
+	defer db.Close(Ctx)
 
-	rows, err := db.Query(`SELECT "id","username","name","surname","description"
+	rows, err := db.Query(Ctx,
+		`SELECT "id","username","name","surname","description"
 		FROM "users","userdata"
 		WHERE users.id = userdata.userid`)
 	if err != nil {
@@ -193,7 +196,7 @@ func UpdateUser(d Userdata) error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
+	defer db.Close(Ctx)
 
 	userID := exists(d.Username)
 	if userID == -1 {
@@ -201,7 +204,7 @@ func UpdateUser(d Userdata) error {
 	}
 	d.ID = userID
 	updateStatement := `update "userdata" set "name"=$1, "surname"=$2, "description"=$3 where "userid"=$4`
-	_, err = db.Exec(updateStatement, d.Name, d.Surname, d.Description, d.ID)
+	_, err = db.Exec(Ctx, updateStatement, d.Name, d.Surname, d.Description, d.ID)
 	if err != nil {
 		return err
 	}
