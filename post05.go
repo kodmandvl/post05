@@ -39,8 +39,8 @@ func openConnection() (*pgx.Conn, error) {
 	if err != nil {
 		return nil, err
 	}
-	// Connection info for testing:
-	fmt.Printf("Connect %s@%s:%d/%s [OK]\n", Username, Hostname, Port, Database)
+	// Print connection info for testing:
+	// fmt.Printf("Connect %s@%s:%d/%s [OK]\n", Username, Hostname, Port, Database)
 	return db, nil
 }
 

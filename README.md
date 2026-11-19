@@ -7,7 +7,9 @@ Create tables by running the next command:
 
 This is my fork of [mactsouk/post05 repository](https://github.com/mactsouk/post05) for education purposes.
 
+Add new tag (after commit and push):
+
 ```bash
-git tag v0.0.5
-git push origin v0.0.5
+git tag v0.0.6
+git push origin v0.0.6
 ```
