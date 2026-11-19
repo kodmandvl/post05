@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jackc/pgx/v5"
 	_ "github.com/lib/pq"
 )
 
@@ -30,18 +29,18 @@ type Userdata struct {
 	Description string
 }
 
-func openConnection() (*pgx.Conn, error) {
-	// connection string
-	conn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		Hostname, Port, Username, Password, Database)
+// func openConnection() (*pgx.Conn, error) {
+// 	// connection string
+// 	conn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+// 		Hostname, Port, Username, Password, Database)
 
-	// open database
-	db, err := pgx.Connect(Ctx, conn)
-	if err != nil {
-		return nil, err
-	}
-	return db, nil
-}
+// 	// open database
+// 	db, err := pgx.Connect(Ctx, conn)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return db, nil
+// }
 
 // The function returns the User ID of the username
 // -1 if the user does not exist
