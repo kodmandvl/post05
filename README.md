@@ -6,3 +6,10 @@ Create tables by running the next command:
 `$ psql -h localhost -p 5432 -U mtsouk master < create_tables.sql`
 
 This is my fork of [mactsouk/post05 repository](https://github.com/mactsouk/post05) for education purposes.
+
+```bash
+git tag v0.0.2
+git add -A
+git commit -am "v0.0.2 tag"
+git push
+```

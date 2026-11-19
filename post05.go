@@ -40,7 +40,7 @@ func openConnection() (*pgx.Conn, error) {
 		return nil, err
 	}
 	// Info (for testing):
-	fmt.Printf("Connect %s@%s:%d/%s [OK]", Username, Hostname, Port, Database)
+	fmt.Printf("Connect %s@%s:%d/%s [OK]\n", Username, Hostname, Port, Database)
 	return db, nil
 }
 
