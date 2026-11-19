@@ -8,8 +8,8 @@ Create tables by running the next command:
 This is my fork of [mactsouk/post05 repository](https://github.com/mactsouk/post05) for education purposes.
 
 ```bash
-git tag v0.0.2
+git tag v0.0.3
 git add -A
-git commit -am "v0.0.2 tag"
+git commit -am "v0.0.3 tag"
 git push
 ```
