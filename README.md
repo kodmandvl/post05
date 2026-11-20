@@ -10,6 +10,6 @@ This is my fork of [mactsouk/post05 repository](https://github.com/mactsouk/post
 Add new tag (after commit and push):
 
 ```bash
-git tag v0.0.6
-git push origin v0.0.6
+git tag v0.0.7
+git push origin v0.0.7
 ```
